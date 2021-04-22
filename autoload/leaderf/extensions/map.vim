@@ -1,6 +1,6 @@
 function leaderf#extensions#map#map(args) abort
     let l:mode = ''
-    if a:args->has_key('--mode') && a:args['--mode']->len() != 0
+    if has_key(a:args, '--mode') && len(a:args['--mode']) != 0
         let l:mode = a:args['--mode'][0]
     endif
 
@@ -29,16 +29,16 @@ function leaderf#extensions#map#format(lines, args) abort
     let l:max_lhs = 0
     let l:total_lhs = 0
     for l:line in a:lines
-        let l:matched = l:line->matchlist('^\(..\) \(\S\+\)\s*\([*&@]*\)\s*\(.*\)$')
+        let l:matched = matchlist(l:line, '^\(..\) \(\S\+\)\s*\([*&@]*\)\s*\(.*\)$')
         if len(l:matched) != 0
             let l:mapping = {
-                \ 'mode': l:matched[1]->substitute(' ', '', 'g')->split('\zs'),
+                \ 'mode': split(substitute(l:matched[1], ' ', '', 'g'), '\zs'),
                 \ 'lhs': l:matched[2],
-                \ 'special': l:matched[3]->substitute(' ', '', 'g')->split('\zs'),
+                \ 'special': split(substitute(l:matched[3], ' ', '', 'g'), '\zs'),
                 \ 'rhs': l:matched[4],
             \ }
             let l:mappings += [ l:mapping ]
-            let l:lhs_len = l:mapping['lhs']->strlen()
+            let l:lhs_len = strlen(l:mapping['lhs'])
             if l:lhs_len > l:max_lhs
                 let l:max_lhs = l:lhs_len
             endif
@@ -46,7 +46,7 @@ function leaderf#extensions#map#format(lines, args) abort
         endif
     endfor
 
-    let l:avg_lhs = l:total_lhs / l:mappings->len()
+    let l:avg_lhs = l:total_lhs / len(l:mappings)
     if l:avg_lhs * 3 / 2 < l:max_lhs
         let l:max_lhs = l:avg_lhs * 3 / 2
     endif
